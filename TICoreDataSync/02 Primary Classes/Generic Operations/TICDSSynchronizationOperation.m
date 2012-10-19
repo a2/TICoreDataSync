@@ -854,7 +854,11 @@
     
     NSManagedObject *relatedObject = [self backgroundApplicationContextObjectForEntityName:[aSyncChange relatedObjectEntityName] syncIdentifier:[aSyncChange changedRelationships]];
     
-    [object performSelector:NSSelectorFromString(selectorName) withObject:relatedObject];
+    if ([object respondsToSelector:NSSelectorFromString(selectorName)]) {
+        [object performSelector:NSSelectorFromString(selectorName) withObject:relatedObject];
+    } else {
+        TICDSLog(TICDSLogVerbosityErrorsOnly, @"Object does not respond to selector: %@ [%@] %@", selectorName, aSyncChange, [aSyncChange objectEntityName]);
+    }
     
     TICDSLog(TICDSLogVerbosityManagedObjectOutput, @"[%@] %@", aSyncChange, [aSyncChange objectEntityName]);
     TICDSLog(TICDSLogVerbosityManagedObjectOutput, @"Changed to-many relationships on object: %@", object);
